@@ -1,31 +1,21 @@
 #!/bin/sh
 
-# Adapter les permissions
+# Permissions
 chown -R nobody:nobody /var/www /run/nginx /var/log/nginx 2>/dev/null || true
 
-# Récupérer le port Railway (ou 8080 par défaut)
-TARGET_PORT=${PORT:-8080}
-echo "Attribution du port $TARGET_PORT pour Nginx..."
+# Railway définit automatiquement $PORT. Si absente, on fallback sur 8080.
+PORT_TO_LISTEN=${PORT:-8080}
+echo "Attribution du port $PORT_TO_LISTEN pour Nginx..."
 
-# Remplacer le port dans le fichier de config Nginx
-sed -i "s/listen .*/listen $TARGET_PORT;/g" /etc/nginx/conf.d/default.conf 2>/dev/null || true
+# Injection du port Railway dans la conf Nginx
+sed -i "s/listen .*/listen $PORT_TO_LISTEN;/g" /etc/nginx/conf.d/default.conf 2>/dev/null || true
 
-# Démarrer PHP-FPM
 php-fpm -D
-if [ $? -ne 0 ]; then
-  echo "Erreur lors du démarrage de PHP-FPM"
-  exit 1
-fi
 
-echo "PHP-FPM démarré avec succès."
-
-# Tester la configuration Nginx avant lancement
 nginx -t
 if [ $? -ne 0 ]; then
-  echo "Erreur dans la configuration Nginx !"
   exit 1
 fi
 
-# Démarrer Nginx au premier plan
-echo "Lancement de Nginx sur 0.0.0.0:$TARGET_PORT..."
+echo "Lancement de Nginx sur le port $PORT_TO_LISTEN..."
 exec nginx -g 'daemon off;'
