@@ -1,31 +1,18 @@
 #!/bin/sh
 
-# Permissions
-chown -R nobody:nobody /var/www /run/nginx /var/log/nginx 2>/dev/null || true
+# Redirection des logs Nginx vers la console de Railway
+ln -sf /dev/stdout /var/log/nginx/access.log 2>/dev/null || true
+ln -sf /dev/stderr /var/log/nginx/error.log 2>/dev/null || true
 
-# Récupération du port envoyé par Railway (ou 8080 par défaut)
-TARGET_PORT=${PORT:-8080}
-echo "Attribution du port $TARGET_PORT pour Nginx..."
-
-# Forcer l'écoute sur 0.0.0.0:<PORT>
-sed -i -E "s/listen .*/listen 0.0.0.0:$TARGET_PORT;/g" /etc/nginx/conf.d/default.conf 2>/dev/null || true
-
-# Lancement de PHP-FPM
+# Lancement de PHP-FPM en arrière-plan
 php-fpm -D
-if [ $? -ne 0 ]; then
-  echo "Erreur PHP-FPM"
-  exit 1
-fi
 
-echo "PHP-FPM démarré avec succès."
-
-# Validation Nginx
+# Test de la configuration Nginx
 nginx -t
 if [ $? -ne 0 ]; then
-  echo "Erreur de configuration Nginx"
+  echo "Erreur de syntaxe Nginx !"
   exit 1
 fi
 
-# Lancement de Nginx au premier plan
-echo "Lancement de Nginx sur 0.0.0.0:$TARGET_PORT..."
+echo "Lancement de Nginx au premier plan sur 8080..."
 exec nginx -g 'daemon off;'
