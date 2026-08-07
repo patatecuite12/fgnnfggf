@@ -7,10 +7,10 @@ RUN docker-php-ext-install mbstring
 RUN docker-php-ext-install pdo_mysql
 
 RUN rm -rf /var/www/*
-RUN mkdir /run/nginx
+RUN mkdir -p /run/nginx
 
-RUN mkdir /var/www/Application
-RUN mkdir /var/www/Data
+RUN mkdir -p /var/www/Application
+RUN mkdir -p /var/www/Data
 
 ADD Website/Public /var/www/html
 ADD Website/Application /var/www/Application
