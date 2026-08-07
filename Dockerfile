@@ -5,7 +5,8 @@ RUN apk add --no-cache oniguruma-dev nginx
 RUN docker-php-ext-install mbstring pdo_mysql
 
 RUN rm -rf /var/www/*
-RUN mkdir -p /run/nginx /var/www/Application /var/www/Data /var/www/html/img/brand /var/www/html/img/backdrops
+# Ajout de /etc/nginx/snippets dans les dossiers créés
+RUN mkdir -p /run/nginx /etc/nginx/snippets /var/www/Application /var/www/Data /var/www/html/img/brand /var/www/html/img/backdrops
 
 ADD Website/Public /var/www/html
 ADD Website/Application /var/www/Application
@@ -19,13 +20,13 @@ COPY Website/PHP.ini /usr/local/etc/php/php.ini
 
 COPY api-keys.json /var/www/Data/api-keys.json
 
-# Fichiers NGINX (Espaces nettoyés)
+# Fichiers NGINX
 COPY Website/NGINX/Default.conf /etc/nginx/conf.d/default.conf
 COPY Website/NGINX/Locations.conf /etc/nginx/snippets/locations.conf
 COPY Website/NGINX/Domains.conf /etc/nginx/snippets/domains.conf
 COPY Website/NGINX/Custom.conf /etc/nginx/snippets/custom.conf
 
-# Chemins Branding corrigés
+# Chemins Branding
 COPY Branding/Main/Big.png /var/www/html/img/brand/big.png
 COPY Branding/Main/Small.png /var/www/html/img/brand/small.png
 COPY Branding/Backdrops/Main.png /var/www/html/img/backdrops/about.png
