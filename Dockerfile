@@ -20,7 +20,7 @@ ADD Website/Submodules /var/www/Submodules
 RUN chmod +x /var/www/Data
 
 COPY Website/Packaging/Version /var/www/Packaging/Version
-COPY .git/refs/heads/master /var/www/Packaging/Hash
+# COPY .git/refs/heads/master /var/www/Packaging/Hash
 
 COPY Website/PHP.ini /usr/local/etc/php/php.ini
 
