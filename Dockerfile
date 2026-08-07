@@ -5,7 +5,9 @@ RUN apk add --no-cache oniguruma-dev nginx
 RUN docker-php-ext-install mbstring pdo_mysql
 
 RUN rm -rf /var/www/*
-# Ajout de /etc/nginx/snippets dans les dossiers créés
+# Supprimer TOUTES les configs Nginx par défaut pour éviter les conflits de port
+RUN rm -f /etc/nginx/conf.d/*.conf /etc/nginx/http.d/*.conf
+
 RUN mkdir -p /run/nginx /etc/nginx/snippets /var/www/Application /var/www/Data /var/www/html/img/brand /var/www/html/img/backdrops
 
 ADD Website/Public /var/www/html
